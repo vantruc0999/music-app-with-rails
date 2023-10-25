@@ -26,13 +26,11 @@ class Api::V1::GenresController < ApiController
     end
 
     def update
-        @genre = Genre.new(genre_params)
-
-        if @genre.save
-          render_success(@genre, "Genres created successfully")
-        else    
-          render_error(@genre.errors)
-        end
+      if @genre.update(genre_params)
+        render_success(@genre, "Genre updated successfully")
+      else    
+        render_error(@genre.errors)
+      end
     end
 
     def destroy

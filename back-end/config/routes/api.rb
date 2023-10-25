@@ -5,6 +5,10 @@ namespace :api do
         end
 
         resources :genres
+
+        resources :artists
+
+        resources :albums
     end
 end
 
