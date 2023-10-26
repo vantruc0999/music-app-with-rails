@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2023_10_25_022307) do
+ActiveRecord::Schema[7.1].define(version: 2023_10_26_074835) do
   create_table "active_storage_attachments", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.string "name", null: false
     t.string "record_type", null: false
@@ -112,6 +112,16 @@ ActiveRecord::Schema[7.1].define(version: 2023_10_25_022307) do
     t.index ["song_id", "playlist_id"], name: "index_playlists_songs_on_song_id_and_playlist_id"
   end
 
+  create_table "song_artists", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
+    t.bigint "song_id", null: false
+    t.bigint "artist_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["artist_id"], name: "index_song_artists_on_artist_id"
+    t.index ["song_id", "artist_id"], name: "index_song_artists_on_song_id_and_artist_id", unique: true
+    t.index ["song_id"], name: "index_song_artists_on_song_id"
+  end
+
   create_table "songs", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.string "name"
     t.float "duration"
@@ -119,17 +129,17 @@ ActiveRecord::Schema[7.1].define(version: 2023_10_25_022307) do
     t.text "lyric"
     t.bigint "play_count", default: 0
     t.bigint "album_id"
-    t.bigint "artist_id"
+    t.bigint "genre_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.bigint "genre_id"
     t.index ["album_id"], name: "fk_rails_f4e40cd655"
-    t.index ["artist_id"], name: "fk_rails_5ce8fd4cc7"
     t.index ["genre_id"], name: "fk_rails_31272893df"
   end
 
   create_table "users", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.string "email", default: "", null: false
+    t.integer "gender", limit: 1
+    t.date "birth_day"
     t.string "encrypted_password", default: "", null: false
     t.string "reset_password_token"
     t.datetime "reset_password_sent_at"
@@ -137,6 +147,7 @@ ActiveRecord::Schema[7.1].define(version: 2023_10_25_022307) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.integer "role", default: 0
+    t.string "full_name"
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
   end
@@ -150,7 +161,8 @@ ActiveRecord::Schema[7.1].define(version: 2023_10_25_022307) do
   add_foreign_key "playlists", "users"
   add_foreign_key "playlists_songs", "playlists"
   add_foreign_key "playlists_songs", "songs"
+  add_foreign_key "song_artists", "artists"
+  add_foreign_key "song_artists", "songs"
   add_foreign_key "songs", "albums"
-  add_foreign_key "songs", "artists"
   add_foreign_key "songs", "genres"
 end

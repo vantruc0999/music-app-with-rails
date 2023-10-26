@@ -2,6 +2,9 @@ namespace :api do
     namespace :v1 do
         scope :users, module: :users do
             post '/', to: "registrations#create", as: :user_registration
+            get '/get-all-users', to: "users#get_all_users"
+            get '/get-user', to: "users#get_user"
+            post '/update-user', to: "users#update_user"
         end
 
         resources :genres
@@ -9,6 +12,8 @@ namespace :api do
         resources :artists
 
         resources :albums
+
+        resources :songs
     end
 end
 
