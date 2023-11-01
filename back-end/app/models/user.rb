@@ -5,6 +5,7 @@ class User < ApplicationRecord
          :recoverable, :rememberable, :validatable
          
   has_many :favorites
+  has_many :playlists
   has_many :songs, through: :favorites
 
   has_one_attached :avatar_image

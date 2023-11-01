@@ -5,49 +5,15 @@ class Api::V1::SongsController < ApiController
 
     include ApplicationHelper
     include ApiResponse
+    include SongDetailsConcern
 
     def index
-        @songs = Song.includes(:genre, :artists, :album).all
-        data = @songs.as_json(
-          include: {
-            genre: {
-              except: [:created_at, :updated_at],
-            },
-            album: {
-              except: [:created_at, :updated_at],
-              methods: :cover_url
-            },
-            artists: {
-              except: [:created_at, :updated_at],
-              methods: :artist_image_url
-            },
-          },
-          except: [:album_id, :genre_id],  # Specify the attributes to exclude without square brackets
-          methods: [:image_url, :audio_url]
-        )
-        render_success(data, "Songs loaded successfully")
+      @songs = render_song_data(Song.includes(:genre, :artists, :album).all)
+      render_success(@songs, "Songs loaded successfully")
     end
       
-
     def show
-        data = @song.as_json(
-            include: {
-                genre: {
-                    except: [:created_at, :updated_at],
-                },
-                album: {
-                    except: [:created_at, :updated_at, :artist_id],
-                    methods: :cover_url
-                },
-                artists: {
-                    except: [:created_at, :updated_at],
-                    methods: :artist_image_url
-                },
-            },
-            except: [:album_id, :genre_id],  # Specify the attributes to exclude without square brackets
-            methods: [:image_url, :audio_url]
-        )
-        render_success(data, "Song loaded successfully")
+      render_song_data(@song, "Song loaded successfully")
     end
 
     def create
@@ -61,6 +27,7 @@ class Api::V1::SongsController < ApiController
             artist = Artist.find_or_create_by(id: artist_id)
             @song.artists << artist
           end
+          SongMailer.with(user: current_user, song: @song).song_created.deliver_later
           render_success(@song,  "song created successfully")
         else
           render_error( @song.errors)
@@ -77,7 +44,7 @@ class Api::V1::SongsController < ApiController
         params[:artists].each do |artist_id|
             artist = Artist.find_or_create_by(id: artist_id)
             @song.artists << artist
-            end
+        end
             render_success(@song,  "song updated successfully")
         else
             render_error( @song.errors)

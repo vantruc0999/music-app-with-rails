@@ -14,6 +14,16 @@ namespace :api do
         resources :albums
 
         resources :songs
+
+        resources :playlists do 
+            collection do
+                post '/add-to-playlist/:id', to: "playlists#add_to_playlist"
+                delete '/remove-from-playlist/:id', to: "playlists#remove_from_playlist"
+            end
+        end
+
+        post '/favorites/toggle', to: 'favorites#toggle_favorite'
+        get '/favorites/lists', to: 'favorites#get_my_favorites'
     end
 end
 
