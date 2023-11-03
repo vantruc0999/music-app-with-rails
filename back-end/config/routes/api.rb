@@ -5,6 +5,8 @@ namespace :api do
             get '/get-all-users', to: "users#get_all_users"
             get '/get-user', to: "users#get_user"
             post '/update-user', to: "users#update_user"
+            post 'password/forgot', to: 'password_resets#forgot'
+            post 'password/reset/:token', to: 'password_resets#reset'
         end
 
         resources :genres
